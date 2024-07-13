@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+psycopg2 = "*"
+alembic = "*"
+python-dotenv = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
+passlib = "*"
+python-multipart = "*"
+fastapi-jwt-auth = "*"
+bcrypt = "==4.0.1"
+fastapi-mail = "==1.4.1"
+slowapi = "*"
+cloudinary = "*"
+sphinx = "*"
+pytest = "*"
+
+[dev-packages]
+sphinx = "*"
+
+[requires]
+python_version = "3.12"
