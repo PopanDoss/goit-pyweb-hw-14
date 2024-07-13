@@ -95,58 +95,37 @@ class TestUserService(unittest.TestCase):
         access_token_data = {"sub": mock_user.email}
 
         with mock.patch('repository.auth.create_access_token', return_value="new_access_token"):
+            
             access_token = UserService.refresh_token(refresh_token, self.db)
 
+            
             self.assertEqual(access_token, "new_access_token")
             self.db.query.return_value.filter.assert_called_once_with(User.email == mock_user.email)
             self.db.commit.assert_called_once()
 
+    def test_refresh_token_invalid(self):
+        refresh_token = "invalid_refresh_token"
+        mock_user = Mock(spec=User)
+        mock_user.refresh_token = "valid_refresh_token"
+        self.db.query.return_value.filter.return_value.first.return_value = mock_user
 
-#     def test_refresh_token_valid(self):
-#         # Arrange
-#         refresh_token = "valid_refresh_token"
-#         mock_user = mock.Mock(spec=User)
-#         mock_user.refresh_token = refresh_token
-#         self.db.query.return_value.filter.return_value.first.return_value = mock_user
-#         access_token_data = {"sub": mock_user.email}
+        with self.assertRaises(InvalidRefreshtoken):
+            UserService.refresh_token(refresh_token, self.db)
 
-#         with mock.patch('repository.auth.create_access_token', return_value="new_access_token"):
-#             # Act
-#             access_token = UserService.refresh_token(refresh_token, self.db)
+    def test_update_avatar(self):
+        mock_user = User(id=1)
+        
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as tmp_file:
+            tmp_file.write(b"dummy_content")
+            tmp_file.flush()
+            tmp_file.seek(0)
+            
+            user_avatar = UploadFile(filename="avatar.jpg", file=tmp_file)
 
-#             # Assert
-#             self.assertEqual(access_token, "new_access_token")
-#             self.db.query.return_value.filter.assert_called_once_with(User.email == mock_user.email)
-#             self.db.commit.assert_called_once()
+            with unittest.mock.patch('utils.cloudinary.upload_file_to_cloudinary', return_value='mocked_url'):
+                updated_user = UserService.update_avatar(mock_user, user_avatar, self.db)
 
-#     def test_refresh_token_invalid(self):
-#         refresh_token = "invalid_refresh_token"
-#         mock_user = Mock(spec=User)
-#         mock_user.refresh_token = "valid_refresh_token"
-#         self.db.query.return_value.filter.return_value.first.return_value = mock_user
-
-#         with self.assertRaises(InvalidRefreshtoken):
-#             UserService.refresh_token(refresh_token, self.db)
-
-#     # def test_update_avatar(self):
-#     #     mock_user = User(id=1)
-
-#     #     # Створення тимчасового файлу
-#     #     with tempfile.NamedTemporaryFile(suffix=".jpg") as tmp_file:
-#     #         # Запис деякого вмісту у файл
-#     #         tmp_file.write(b"dummy_content")
-#     #         tmp_file.flush()
-#     #         tmp_file.seek(0)
-
-#     #         # Використання об'єкта файлу для завантаження на Cloudinary
-#     #         user_avatar = UploadFile(filename="avatar.jpg", file=tmp_file)
-
-#     #         # Мокаємо функцію upload_file_to_cloudinary
-#     #         with unittest.mock.patch('utils.cloudinary.upload_file_to_cloudinary', return_value='mocked_url'):
-#     #             updated_user = UserService.update_avatar(mock_user, user_avatar, self.db)
-
-#     #             # Перевірка, що avatar_urls встановлено
-#     #             self.assertEqual(updated_user.avatar_urls, 'mocked_url')
+                self.assertEqual(updated_user.avatar_urls, 'mocked_url')
 
     def test_confirmed_email(self):
         mock_user = Mock(spec=User)
