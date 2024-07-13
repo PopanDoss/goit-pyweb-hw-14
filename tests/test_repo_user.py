@@ -148,12 +148,12 @@ class TestUserService(unittest.TestCase):
 #     #             # Перевірка, що avatar_urls встановлено
 #     #             self.assertEqual(updated_user.avatar_urls, 'mocked_url')
 
-#     def test_confirmed_email(self):
-#         mock_user = Mock(spec=User)
-#         self.db.query.return_value.filter.return_value.first.return_value = mock_user
+    def test_confirmed_email(self):
+        mock_user = Mock(spec=User)
+        self.db.query.return_value.filter.return_value.first.return_value = mock_user
 
-#         UserService.confirmed_email("test@example.com", self.db)
-#         self.assertTrue(mock_user.confirmed)
+        UserService.confirmed_email("test@example.com", self.db)
+        self.assertTrue(mock_user.confirmed)
 
-# if __name__ == '__main__':
-#     unittest.main()
+if __name__ == '__main__':
+    unittest.main()
