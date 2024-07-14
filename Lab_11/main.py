@@ -30,33 +30,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-banned_ips = [ip_address("192.168.1.1"), ip_address("192.168.1.2")]
+# banned_ips = []
 
-@app.middleware("http")
-async def ban_ips(request: Request, call_next: Callable):
-    """
-    Middleware to ban specific IP addresses.
-    """
-    ip = ip_address(request.client.host)
-    if ip in banned_ips:
-        return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"detail": "You are banned"})
-    response = await call_next(request)
-    return response
+# @app.middleware("http")
+# async def ban_ips(request: Request, call_next: Callable):
+#     """
+#     Middleware to ban specific IP addresses.
+#     """
+#     ip = ip_address(request.client.host)
+#     if ip in banned_ips:
+#         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"detail": "You are banned"})
+#     response = await call_next(request)
+#     return response
 
 
-user_agent_ban_list = [r"Python-urllib"]
+# user_agent_ban_list = []
 
-@app.middleware("http")
-async def user_agent_ban_middleware(request: Request, call_next: Callable):
-    """
-    Middleware to ban requests based on user-agent header.
-    """
-    user_agent = request.headers.get("user-agent")
-    for ban_pattern in user_agent_ban_list:
-        if re.search(ban_pattern, user_agent):
-            return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"detail": "You are banned"})
-    response = await call_next(request)
-    return response
+# @app.middleware("http")
+# async def user_agent_ban_middleware(request: Request, call_next: Callable):
+#     """
+#     Middleware to ban requests based on user-agent header.
+#     """
+#     user_agent = request.headers.get("user-agent")
+#     for ban_pattern in user_agent_ban_list:
+#         if re.search(ban_pattern, user_agent):
+#             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"detail": "You are banned"})
+#     response = await call_next(request)
+#     return response
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)

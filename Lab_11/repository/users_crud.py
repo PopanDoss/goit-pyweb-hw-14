@@ -2,8 +2,9 @@ import select
 from typing import Optional
 from sqlalchemy.orm import Session
 
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+
 
 from database.models import User
 
@@ -107,11 +108,14 @@ class UserService:
         data={"sub": user.email}
         access_token = create_access_token(data=data)
         refresh_token = create_refresh_token(data=data)
+
         user.refresh_token = refresh_token
-        
+    
         UserService.save_user(user, db)
         return access_token, refresh_token
-    
+        
+        
+
     @staticmethod
     def refresh_token(refresh_token: str, db: Session):
         """
